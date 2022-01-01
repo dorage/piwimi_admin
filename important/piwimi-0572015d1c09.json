@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "piwimi",
+  "private_key_id": "0572015d1c09bf20b27b8a993ab83836d643c2e8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCr1BdaKe3y/s5U\ncgMPQm9t8dAjKUH61omDXcoQXxGBP2wri3w8FsS/ZID5PD49YNrayJMSPMHufc4x\ndwwUbPI/e1maz/f0RDlk6j8j8xQ3AUx0xp6YpZnSj67OZ/XWdKNy4u61/UNmyLfp\nZuMOvunSYqX3XQ34SteclUGtCdsrK804r/AEz7ppQo8vO3tMiupCRmITG7+afSF5\nAfdYtUPyCRSyu70L3shLR13Vd+m1IILFFleeh4KeJg8Q7wfyefuiZMzpe1xC8o0p\nklADoee14dF8RmB0kUKuM+Oz74MSX3nhabZ5GcyLdTibr9VPOmmr4jx6XL3sq+1O\nKvde+y4pAgMBAAECggEAS1wmrcWr9aHpTkH+s4eYpWijt3gV1vSWtQXCZHG9lKkD\nQQnY/+WgfqyOoEDar0K2WbQURLBfAcEtWKZ0ptStXkg0IWDKx9fQMEFIVfT7TbCF\nHsYpspsWnrGjoiUYPelD8lQzC6A7Gm43sucL+GCk3j+juJyYTuhMLgGMH18uP30r\nXDTxQZuxBJjf0/iAxsLjwLK9+6Smxpt5Y+uNAiYjhURgzoP8KU/pn04rilDjBrPO\ndtymMulk5gF9rYWHiYKtGUzeoI3Zw+vPtjv4FhEZD3ZrKO7sZTM0JGnaJlJYgb06\nxRYurhbBUl8XhtZLWYExGL1XZLcIcEu18TqB/2XIXQKBgQDZMBtK7nm6aRPn8qP/\nfBhajZigo6fwmdthuKaRGO8RKPWp6N/0srggzNR1GzPHeRE4J5D95omMYqbsmi3F\nNuI4TU50Cooi7f9bOD8RywxYe5J163JwYUufwdeYeiJEHc5tEEXo9kI5LqWiawcn\nMPdvrZVu25Xg7VEHQUw/szHDYwKBgQDKiOKeB0Q+Za6OU5glHak731YnaVrLnZ2p\nNJr70aTR1+NmxcpEMNJWPOPM8aAQUX/MDoIJZQ7lEyxgyqTAGb3gopC7dA0JQamI\nVeHwvjBxUtfaeLeabdrYIBSpoiDVyVPrjF05pIgU0VA3KsX2joO4t9YvXmWO5ve7\nOnDM1XHMAwKBgQDOrebrEbGpYSFeUxsZn2AVnDWoeNTyM5f/kJaB8bZfIBlXzZKB\n7CkonYN4xaAqrN1kENL7q40tmRu8gKQZzrbMWVTVPMpjnxSoHAh4yD9BXKbtrFdE\n9nHe37ppEaDWLX8pbpj4rpAqlmds/mjaNNDi588SpcglOfEn9E25OK+cfQKBgQCC\ntTrDT988AbVYhxx+f5jzWdwpDTYaiDrys09+Srr67kAE2IsD3Roxq5Q8dIefYGmA\nkLBdTcoCDpCqWr1eeH5xFZkgUPIE0kqOARcSnjt3N0a06Qlc8Z61smaDX22faxHs\nxyZ3B/cGsFr7b3BZAXqC4Kmq4lnakra4LywTFYEebwKBgDYP6vY6LkvSfj7jxibN\nDLbNQ1GOHSkhw68etmBZ1x+c7o3LGyt4jfc2Ndz1gnKLLU3QZnEB+eF2+9z+MmVw\nZeWNZtJr8Zj9NXNMD9GYSqAODkgAySwHDwhVqCqu7EC90+FnhhO6HluXzvcAxk9S\nMO536AEPctAiBm3JIL+EK6P1\n-----END PRIVATE KEY-----\n",
+  "client_email": "piwimi-admin-nodejs@piwimi.iam.gserviceaccount.com",
+  "client_id": "112182722314492329015",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/piwimi-admin-nodejs%40piwimi.iam.gserviceaccount.com"
+}

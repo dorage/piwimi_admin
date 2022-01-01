@@ -1,0 +1,151 @@
+doctype html
+head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width,initial-scale=1')
+    block title
+    // Favicon icon
+    link(
+        rel='icon',
+        type='image/png',
+        sizes='16x16',
+        href='/public/images/favicon.png'
+    )
+    link(href='/public/css/style.css', rel='stylesheet')
+body
+    //    *******************
+        Preloader start
+        ********************
+    #preloader
+        .sk-three-bounce
+            .sk-child.sk-bounce1
+            .sk-child.sk-bounce2
+            .sk-child.sk-bounce3
+    //
+        *******************
+        Preloader end
+        ********************
+    //
+        **********************************
+        Main wrapper start
+        ***********************************
+    #main-wrapper
+        //
+            **********************************
+            Nav header start
+            ***********************************
+        .nav-header
+            a.brand-logo(href='/')
+                img.logo-abbr(
+                    src='https://storage.googleapis.com/pwm-res/web/common/logo_light.png',
+                    alt=''
+                )
+                img.logo-compact(
+                    src='https://storage.googleapis.com/pwm-res/web/common/logo_light.png',
+                    alt=''
+                )
+                img.brand-title(
+                    src='https://storage.googleapis.com/pwm-res/web/common/logo_light.png',
+                    alt=''
+                )
+            .nav-control
+                .hamburger
+                    span.line
+                    span.line
+                    span.line
+        //
+            **********************************
+            Nav header end
+            ***********************************
+        //
+            **********************************
+            Header start
+            ***********************************
+        .header
+            .header-content
+                nav.navbar.navbar-expand
+        //
+            **********************************
+            Header end ti-comment-alt
+            ***********************************
+        //
+            **********************************
+            Sidebar start
+            ***********************************
+        .quixnav
+            .quixnav-scroll
+                ul#menu.metismenu
+                    li.nav-label.first Main Menu
+                    li
+                        a.has-arrow(
+                            href='javascript:void()',
+                            aria-expanded='false'
+                        )
+                            i.icon.icon-single-04
+                            span.nav-text Psychotest
+                        ul(aria-expanded='false')
+                            li
+                                a(href='/psychotest') Test List
+                    li
+                        a.has-arrow(
+                            href='javascript:void()',
+                            aria-expanded='false'
+                        )
+                            i.icon.icon-single-04
+                            span.nav-text Review
+                        ul(aria-expanded='false')
+                            li
+                                a(href='/review') Review List
+        //
+            **********************************
+            Sidebar end
+            ***********************************
+        //
+            **********************************
+            Content body start
+            ***********************************
+        .content-body
+            .container-fluid
+                block content-body
+        //
+            **********************************
+            Content body end
+            ***********************************
+        //
+            **********************************
+            Footer start
+            ***********************************
+        .footer
+            .copyright
+                p
+                    | Copyright &copy; Designed &amp; Developed by
+                    a(href='#', target='_blank') Quixkit
+                    |
+                    | 2019
+                p
+                    | Distributed by
+                    a(href='https://themewagon.com/', target='_blank') Themewagon
+    //
+        **********************************
+        Footer end
+        ***********************************
+    //
+        **********************************
+        Support ticket button start
+        ***********************************
+    //
+        **********************************
+        Support ticket button end
+        ***********************************
+    //
+        **********************************
+        Main wrapper end
+        ***********************************
+    //
+        **********************************
+        Scripts
+        ***********************************
+    // Required vendors
+    script(src='/public/vendor/global/global.min.js')
+    script(src='/public/js/quixnav-init.js')
+    script(src='/public/js/custom.min.js')

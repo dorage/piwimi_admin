@@ -1,0 +1,150 @@
+extends ../layout.pug
+
+mixin input(id, value)
+    .row.form-group
+        .col-sm-2.col-form-label !{ id }
+        .col-sm-10
+            input.form-control(value=`${value}`, data-key=`${id}`)
+
+mixin textarea(id ,value)
+    .row.form-group
+        .col-sm-2.col-form-label !{ id }
+        .col-sm-10
+            textarea.form-control(rows='4', data-key=`${id}`)
+                | !{ value.split('\n').join('&#10;') }
+
+mixin file(id, value)
+    .row.form-group
+        .col-sm-2.col-form-label !{ id }
+        .col-sm-10
+            input.custom-file-input(
+                type='file',
+                data-key=`${id}`,
+                accept='.jpg, .jpeg, .png, .gif'
+            )
+            label.custom-file-label= value ? value : ""
+
+mixin image(id, value)
+    .row.form-group
+        .col-sm-2.col-form-label !{ id }
+        .col-sm-10
+            img(src=`${value}`, style='height: 200px')
+
+mixin status(id, value)
+    .row.form-group
+        .col-sm-2.col-form-label !{ id }
+        .col-sm-10 
+            if value
+                span.badge.badge-info Opend
+            else
+                span.badge.badge-warning Closed
+
+mixin answerCard(qid, aId, answer)
+    .card.col-sm-2.text-center.border.shadow-sm.mr-2
+        .card-header
+            h4.card-title ■ !{ answer.type }
+        .card-body
+            p answer ID : !{ aId }
+        .card-footer
+            a.btn.btn-dark.btn-card(href=`./detail/${qId}/answer/${aId}`) Edit
+
+mixin questionCard
+    .border question
+
+block title
+    title Psychotest | PIWIMI
+
+block content-body
+    .row.page-titles.mx-0
+        .col-sm-6
+            .welcome-text
+                h4 Psychotest Detail
+                span.ml-1 psy ID : !{ content.psy.psyId }
+    .row 
+        .col-12
+            .row
+                // Default Information
+                .col-lg-6.col-sm-6
+                    form#formInfo(enctype='multipart/form-data')
+                        .card
+                            .card-header
+                                h4.card-title.col-lg-12 Information
+                            .card-body
+                                - var psy = content.psy;
+                                +input('title', psy.title)
+                                +textarea('description', psy.description)
+                                +image('thumbnail', psy.imgUrl)
+                                +file('thumbnail', psy.imgUrl)
+                                +status('status', psy.status)
+                            .card-footer.d-flex
+                                button.btn.btn-dark(type='submit')= "save"
+                                .subtitled.ml-2= ""
+                // Opengraph
+                .col-lg-6.col-sm-6
+                    form#formOG
+                        .card
+                            .card-header
+                                h4.card-title.col-lg-12 OpenGraph
+                            .card-body
+                                h6 Normal
+                                - var og = content.psy.opengraph.og;
+                                +input('ogTitle', og.title)
+                                +textarea('ogDescription', og.description)
+                                +image('ogThumbnail', og.image)
+                                +file('ogThumbnail', og.image)
+                                +input('ogImageAlt', og.imageAlt)
+                                hr
+                                h6 Twitter
+                                - var twt = content.psy.opengraph.twitter;
+                                +input('twtTitle', twt.title)
+                                +textarea('twtDescription', twt.description)
+                                +image('twtThumbnail', twt.image)
+                                +file('twtThumbnail', twt.image)
+                                +input('twtHashtags', twt.hashtag)
+                            .card-footer.d-flex
+                                button.btn.btn-dark(type='submit')= "save"
+                                .subtitled.ml-2= ""
+            .row
+                // Answers
+                .col-lg-12
+                    .card
+                        .card-header
+                            h4.card-title.col-lg-12 Answers
+                        .card-body
+                            .row.container-fluid
+                                - var qId = content.psy.psyId;
+                                - var answers = content.answer.answers;
+                                - var aId = 0;
+                                if answers
+                                    each answer in answers
+                                        +answerCard(qId, aId, answer)
+                                        - aId += 1;
+                                    .card.bg-light.col-sm-2.text-center.border.border-dark.mr-1
+                                        .card-header
+                                            h4.card-title.text-muted 
+                                        .card-body
+                                            button.btn.btn-dark.btn-card Add New Test
+            .row
+                // Questions
+                .col-lg-12
+                    .card
+                        .card-header
+                            h4.card-title.col-lg-12 Questions
+                        .card-body
+                            ul
+                                - var index = 1;
+                                each question in content.psy.questions
+                                    li.card.border.rounded.mb-2.shadow-sm
+                                        .card-header
+                                            h4.card-title Q!{ index < 10 ? `0${index}` : index }
+                                        .card-body
+                                            p !{ question.query }
+                                            p type: !{ question.answers ? 'Multiple Choice' : 'Yes Or No' }
+                                        - index += 1;
+    .row
+        .row
+            .col-lg-5
+                button.btn.btn-success(type='submit') Save
+            .col-lg-5
+                a.btn.btn-light(href='/psychotest') Cancel
+    script(src='/public/custom/js/psy/detail/index.js')

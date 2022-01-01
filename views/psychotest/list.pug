@@ -1,0 +1,45 @@
+extends ../layout.pug
+
+block title
+    title Psychotest | PIWIMI
+
+mixin element(psy)
+    tr
+        td !{ psy.psyId }
+        td
+            img(
+                src=`${psy.imgUrl?psy.imgUrl:'https://storage.googleapis.com/pwm-res/web/common/image-800_500.jpg'}`,
+                alt='thumbnail',
+                style='height: 80px'
+            )
+        td 
+            a(href=`/psychotest/${psy.psyId}`) !{ psy.title || 'Untitled' }
+        td
+            if psy.status
+                span.badge.badge-info Opend
+            else
+                span.badge.badge-warning Closed
+        td !{ psy.description || 'Untitled' }
+
+block content-body
+    .col-lg-12
+        .card
+            .card-header.row
+                h4.card-title.col-lg-1 Basic
+                .col-lg-9
+                a.col-lg-1(href='/psychotest/create')
+                    button.btn.btn-warning(type='button')= "CREATE"
+                .col-lg-1
+            .card-body
+                .table-responsive
+                    table.table.table-responsive-sm
+                        thead
+                            tr
+                                th ID
+                                th Thumbnail
+                                th Name
+                                th status
+                                th Description
+                        tbody
+                            each psy in content.psys
+                                +element(psy)

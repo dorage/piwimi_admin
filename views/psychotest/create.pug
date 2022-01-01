@@ -1,0 +1,37 @@
+extends ../layout.pug
+
+block title
+    title Psychotest | PIWIMI
+
+block content-body
+    .col-lg-12
+        .card
+            .card-header.row
+                h4.card-title Create Psychotest
+            .card-body
+                .basic-form
+                    form
+                        .form-group.row
+                            label.col-sm-2.col-form-label Title
+                            .col-sm-10
+                                input.form-control(
+                                    type='text',
+                                    placeholder='Title'
+                                )
+                        .form-group.row
+                            label.col-sm-2.col-form-label Description
+                            .col-sm-10
+                                textarea#comment.form-control(
+                                    rows='4',
+                                    placeholder='Description'
+                                )
+                            fieldset.form-group
+                        .input-group.mb-3
+                            .input-group-prepend
+                                span.input-group-text Thumbnail
+                            .custom-file
+                                input.custom-file-input(type='file')
+                                label.custom-file-label Choose file (800 * 500)
+                        .form-group.row
+                            .col-sm-10
+                                button.btn.btn-primary(type='submit') Create Psychotest

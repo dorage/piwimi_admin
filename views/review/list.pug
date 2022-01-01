@@ -1,0 +1,31 @@
+extends ../layout.pug
+
+mixin element(index, review)
+    tr
+        th !{ index }
+        td !{ review.psyId }
+        td !{ review.review }
+        td !{ review.date }
+
+block title
+    title Review | PIWIMI
+
+block content-body
+    .col-lg-12
+        .card
+            .card-header
+                h4.card-title Basic
+            .card-body
+                .table-responsive
+                    table.table.table-responsive-sm
+                        thead
+                            tr
+                                th #
+                                th PsyId
+                                th Review
+                                th Date
+                        tbody
+                            - var index = 1;
+                            each review in content
+                                +element(index, review)
+                                - index += 1;
