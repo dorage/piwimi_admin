@@ -3,7 +3,8 @@
     "main": "index.js",
     "scripts": {
         "start": "nodemon --exec cross-env NODE_ENV=development GOOGLE_APPLICATION_CREDENTIALS=\"./important/piwimi-0572015d1c09.json\" babel-node src/index.js",
-        "production": "cross-env NODE_ENV=production babel-node src/index.js"
+        "production": "cross-env NODE_ENV=production babel-node src/index.js",
+        "test": "cross-env NODE_ENV=development babel-node test/index.js"
     },
     "dependencies": {
         "@google-cloud/storage": "^5.16.0",

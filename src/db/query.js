@@ -35,7 +35,6 @@ SELECT
  * review를 가져옵니다
  * @returns
  */
-// TODO:
 export const selectReviews = async (limit = 20, offset = 0) => {
     const queryString = `
         SELECT *
@@ -51,28 +50,11 @@ export const selectReviews = async (limit = 20, offset = 0) => {
  * 최신 psy순으로 psy를 가져옵니다
  * @returns
  */
-// TODO:
 export const selectPsys = async (limit = 20, offset = 0) => {
     const queryString = `
         SELECT *
         FROM admin.psy
-        ORDER BY psy_id DESC
-        LIMIT ${limit}
-        OFFSET ${offset}
-   `;
-    return QUERY(queryString);
-};
-
-/**
- * 최신 psy순으로 psy를 가져옵니다
- * @returns
- */
-// TODO:
-export const selectPsyResult = async (limit = 20, offset = 0) => {
-    const queryString = `
-        SELECT *
-        FROM admin.psy
-        ORDER BY psy_id DESC
+        ORDER BY id DESC
         LIMIT ${limit}
         OFFSET ${offset}
    `;
@@ -150,7 +132,7 @@ export const selectPsyById = async (psyId) => {
     const queryString = `
         SELECT *
         FROM admin.psy
-        WHERE psy_id=${psyId}
+        WHERE id=${psyId}
     `;
     return await QUERY(queryString);
 };
@@ -160,29 +142,13 @@ export const selectPsyById = async (psyId) => {
  * @param {*} psyId
  * @returns
  */
-export const selectPsyResultById = async (resultId) => {
+export const selectResultById = async (resultId) => {
     const queryString = `
         SELECT *
         FROM admin.psy_result
         WHERE id=${resultId}
     `;
     return await QUERY(queryString);
-};
-
-/**
- * id로 심리테스트의 결과를 가져옵니다.
- * @param {*} qId
- * @param {*} aId
- * @returns
- */
-// TODO:
-export const selectResultByIdWithView = async (qId) => {
-    const queryString = `
-        SELECT admin.psy_result.psy_id, answers, views, opengraphs
-        FROM admin.psy_result, psy_view
-        WHERE admin.psy_result.psy_id=${qId} AND admin.psy_result.psy_id=psy_view.psy_id
-    `;
-    return (await QUERY(queryString))[0];
 };
 
 // piwimi.id/{psyId}/result/{resultId}
@@ -221,35 +187,76 @@ export const updateCountUpView = async (psyId, resultId) => {
     return true;
 };
 
-// TODO:
-export const updatePsy = async (psyId, { title, description, imgUrl }) => {
+/**
+ * psy 정보를 업데이트합니다.
+ * @param {*} psyId
+ * @param {*} param1
+ * @returns
+ */
+export const updatePsy = async (
+    psyId,
+    { title, description, thumbnail, isOpend, questions },
+) => {
     const queryString = `
         UPDATE admin.psy
         SET
-            title = '${title}',
+            title='${title}',
             description='${description}',
-            img_url='${imgUrl}'
+            thumbnail='${thumbnail}',
+            is_opened='${isOpend}',
+            questions='${JSON.stringify(questions)}'
         WHERE
-            psy_id=${psyId}
+            id=${psyId}
         RETURNING *
     `;
     return QUERY(queryString);
 };
 
-// TODO:
-export const updateResult = async () => {};
-
-// TODO:
-export const updateOpengraph = async (psyId, changedOpengraph) => {
-    const { opengraph } = await selectPsyById(psyId);
-    const newOpengraph = updateOpengraph(opengraph, changedOpengraph);
-
+/**
+ * result 정보를 업데이트합니다.
+ * @param {*} resultId
+ * @param {*} param1
+ * @returns
+ */
+export const updateResult = async (
+    resultId,
+    { thumbnail, result, description },
+) => {
     const queryString = `
-        UPDATE admin.psy
+    UPDATE admin.psy_result
+    SET
+        thumbnail='${thumbnail}'
+        result='${result}'
+        description='${description}'
+    WHERE
+        id=${resultId}
+    RETURNING *
+    `;
+
+    return QUERY(queryString);
+};
+
+/**
+ * opengraph 정보를 업데이트합니다.
+ * @param {*} opengraphId
+ * @returns
+ */
+export const updateOpengraph = async (opengraphId) => {
+    const queryString = `
+        UPDATE admin.opengraph
         SET
-            opengraph='${JSON.stringify(newOpengraph)}'
+            common_url='${commonUrl}'
+            common_title='${commonTitle}'
+            common_description='${commonDescription}'
+            common_image='${commonImage}'
+            common_image_alt='${commonImageAlt}'
+            twitter_url='${twitterUrl}'
+            twitter_title='${twitterTitle}'
+            twitter_description='${twitterDescription}'
+            twitter_image='${twitterImage}'
+            twitter_hashtag='${twitterHashtag}'
         WHERE
-            psy_id=${psyId};
+            id=${opengraphId}
         RETURNING *
     `;
     return QUERY(queryString);
@@ -277,7 +284,7 @@ const insertView = async () => {
         )
         RETURNING id;
     `;
-    return QUERY(queryString)[0].id;
+    return (await QUERY(queryString))[0].id;
 };
 
 /**
@@ -286,7 +293,7 @@ const insertView = async () => {
  * @param {*} review
  * @returns Number : id of inserted psy_reivew
  */
-export const insertReview = async (qId, review) => {
+export const insertReview = async (psyId, review) => {
     const queryString = `
         INSERT INTO psy_review
         (
@@ -294,12 +301,12 @@ export const insertReview = async (qId, review) => {
         )
         VALUES
         (
-            ${qId},
+            ${psyId},
             ${review}
         )
         RETURNING id;
     `;
-    return QUERY(queryString)[0].id;
+    return (await QUERY(queryString))[0].id;
 };
 
 /**
@@ -336,7 +343,7 @@ const insertOpengraph = async () => {
         )
         RETURNING id;
     `;
-    return QUERY(queryString)[0].id;
+    return (await QUERY(queryString)[0]).id;
 };
 
 /**
@@ -371,7 +378,7 @@ export const insertPsy = async () => {
         RETURNING id;
     `;
 
-    const id = await QUERY(queryString)[0];
+    const { id } = (await QUERY(queryString))[0];
     await transactionCommit();
     return id;
 };
@@ -381,7 +388,7 @@ export const insertPsy = async () => {
  * @param {*} psyId
  * @returns Number : id of inserted psy_result
  */
-const insertResult = async (psyId) => {
+export const insertResult = async (psyId) => {
     await transactionBegin();
     const ogId = await insertOpengraph();
     const viewId = await insertView();
@@ -407,7 +414,85 @@ const insertResult = async (psyId) => {
         )
         RETURNING id;
     `;
-    const id = await QUERY(queryString)[0];
+    const { id } = (await QUERY(queryString))[0];
     await transactionCommit();
     return id;
+};
+
+/*--------------------------------------------------------
+
+DELETE
+
+--------------------------------------------------------*/
+
+/**
+ * psy를 삭제합니다.
+ * @param {*} psyId
+ * @returns
+ */
+export const deletePsy = async (psyId) => {
+    await transactionBegin();
+    const { opengraphId, psyViewId } = (await selectPsyById(psyId))[0];
+
+    // delete psy
+    await QUERY(`
+        DELETE FROM admin.psy
+        WHERE id=${psyId}
+    `);
+    await transactionRollback();
+    await transactionSavepoint('psy');
+
+    // delete opengraph
+    await QUERY(`
+        DELETE FROM admin.opengraph
+        WHERE id=${opengraphId}
+    `);
+    await transactionRollback('psy');
+    await transactionSavepoint('opengraph');
+
+    // delete psy_view
+    await QUERY(`
+        DELETE FROM psy_view
+        WHERE id=${psyViewId}
+    `);
+    await transactionRollback('opengraph');
+    await transactionCommit();
+
+    return true;
+};
+
+/**
+ * psy_result 를 삭제합니다.
+ * @param {*} resultId
+ * @returns
+ */
+export const deleteResult = async (resultId) => {
+    await transactionBegin();
+    const { opengraphId, psyViewId } = (await selectResultById(resultId))[0];
+
+    // delete psy_result
+    await QUERY(`
+        DELETE FROM admin.psy_result
+        WHERE id=${resultId}
+    `);
+    await transactionRollback();
+    await transactionSavepoint('psy_result');
+
+    // delete opengraph
+    await QUERY(`
+        DELETE FROM admin.opengraph
+        WHERE id=${opengraphId}
+    `);
+    await transactionRollback('psy');
+    await transactionSavepoint('opengraph');
+
+    // delete psy_view
+    await QUERY(`
+        DELETE FROM psy_view
+        WHERE id=${psyViewId}
+    `);
+    await transactionRollback('opengraph');
+    await transactionCommit();
+
+    return true;
 };
