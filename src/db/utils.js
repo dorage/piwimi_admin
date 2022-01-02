@@ -7,9 +7,9 @@ import { isPlainObject } from './typeCheck';
  */
 export const snakeToCamel = (obj) => {
     const newObj = {};
-    const keys = Object.keys(obj);
+    const snakeKeys = Object.keys(obj);
 
-    for (const snakeKey of keys) {
+    for (const snakeKey of snakeKeys) {
         let underscore = false;
         const camelKey = [...snakeKey].reduce((acc, curr) => {
             if (curr === '_') {
@@ -23,10 +23,11 @@ export const snakeToCamel = (obj) => {
             return acc + curr;
         }, '');
 
-        if (isPlainObject(obj)) {
+        if (isPlainObject(obj[snakeKey])) {
             newObj[camelKey] = snakeToCamel(obj[snakeKey]);
+            continue;
         }
-        return (newObj[camelKey] = obj[snakeKey]);
+        newObj[camelKey] = obj[snakeKey];
     }
 
     return newObj;
@@ -37,24 +38,23 @@ export const snakeToCamel = (obj) => {
  * @param {*} obj
  */
 export const camelToSnake = (obj) => {
-    const keys = Object.keys(obj);
+    const camelKeys = Object.keys(obj);
 
     const newObj = {};
-    keys.forEach((snakeKey) => {
-        let underscore = false;
-        const camelKey = [...snakeKey].reduce((acc, curr) => {
-            if (curr === '_') {
-                underscore = true;
-                return acc;
-            }
-            if (underscore) {
-                underscore = false;
-                return acc + curr.toUpperCase();
+    for (const camelKey of camelKeys) {
+        const snakeKey = [...camelKey].reduce((acc, curr) => {
+            if (curr === curr.toUpperCase()) {
+                return acc + '_' + curr;
             }
             return acc + curr;
-        });
-        newObj[camelKey] = obj[snakeKey];
-    });
+        }, '');
+
+        if (isPlainObject(obj[camelKey])) {
+            newObj[snakeKey] = camelToSnake(obj[camelKey]);
+            continue;
+        }
+        newObj[snakeKey] = obj[camelKey];
+    }
 
     return newObj;
 };
@@ -66,26 +66,4 @@ const copyObj = (obj) => {
         else newObj[key] = obj[key];
     }
     return newObj;
-};
-
-/**
- * 변경된 OG를 적용해서 OG를 새로 구성합니다
- * @param {*} oldOG
- * @param {*} newOG
- * @returns
- */
-export const updateOpengraph = (oldOG, newOG) => {
-    const obj = {};
-    for (const key of Object.keys(oldOG)) {
-        if (newOG[key] === undefined) {
-            obj[key] = oldOG[key];
-            continue;
-        }
-        if (oldOG[key] instanceof Object) {
-            obj[key] = updateOpengraph(oldOG[key], newOG[key]);
-            continue;
-        }
-        obj[key] = newOG[key];
-    }
-    return obj;
 };

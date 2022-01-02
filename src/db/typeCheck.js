@@ -3,10 +3,10 @@
  * @param {*} obj
  * @returns
  */
-const isFunction = (obj) => {
-    if (Object.prototype.toString.call(obj) === '[object Function]')
-        return true;
-    return false;
+export const isFunction = (obj) => {
+    if (Object.prototype.toString.call(obj) !== '[object Function]')
+        return false;
+    return true;
 };
 
 /**
@@ -14,7 +14,7 @@ const isFunction = (obj) => {
  * @param {*} obj
  * @returns
  */
-const isArray = (obj) => {
+export const isArray = (obj) => {
     if (Object.keys(obj).includes('length')) return true;
     if (Object.prototype.toString.call(obj) === '[object Array]') return true;
     return false;
@@ -25,7 +25,7 @@ const isArray = (obj) => {
  * @param {*} obj
  * @returns
  */
-const isPlainObject = (obj) => {
+export const isPlainObject = (obj) => {
     for (const key of Object.keys(obj)) {
         if (isFunction(obj[key])) return false;
     }

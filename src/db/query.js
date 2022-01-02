@@ -1,5 +1,5 @@
 import pool from '.';
-import { snakeToCamel, updateOpengraph } from './utils';
+import { snakeToCamel } from './utils';
 
 const QUERY = async (query) => {
     const { rows } = await pool.query(query);
@@ -39,7 +39,7 @@ export const selectReviews = async (limit = 20, offset = 0) => {
     const queryString = `
         SELECT *
         FROM psy_review
-        ORDER BY review_id DESC
+        ORDER BY id DESC
         LIMIT ${limit}
         OFFSET ${offset}
    `;
@@ -134,7 +134,7 @@ export const selectPsyById = async (psyId) => {
         FROM admin.psy
         WHERE id=${psyId}
     `;
-    return await QUERY(queryString);
+    return QUERY(queryString);
 };
 
 /**
@@ -195,7 +195,7 @@ export const updateCountUpView = async (psyId, resultId) => {
  */
 export const updatePsy = async (
     psyId,
-    { title, description, thumbnail, isOpend, questions },
+    { title, description, thumbnail, isOpened, questions },
 ) => {
     const queryString = `
         UPDATE admin.psy
@@ -203,7 +203,7 @@ export const updatePsy = async (
             title='${title}',
             description='${description}',
             thumbnail='${thumbnail}',
-            is_opened='${isOpend}',
+            is_opened='${isOpened}',
             questions='${JSON.stringify(questions)}'
         WHERE
             id=${psyId}
@@ -225,8 +225,8 @@ export const updateResult = async (
     const queryString = `
     UPDATE admin.psy_result
     SET
-        thumbnail='${thumbnail}'
-        result='${result}'
+        thumbnail='${thumbnail}',
+        result='${result}',
         description='${description}'
     WHERE
         id=${resultId}
@@ -245,15 +245,15 @@ export const updateOpengraph = async (opengraphId) => {
     const queryString = `
         UPDATE admin.opengraph
         SET
-            common_url='${commonUrl}'
-            common_title='${commonTitle}'
-            common_description='${commonDescription}'
-            common_image='${commonImage}'
-            common_image_alt='${commonImageAlt}'
-            twitter_url='${twitterUrl}'
-            twitter_title='${twitterTitle}'
-            twitter_description='${twitterDescription}'
-            twitter_image='${twitterImage}'
+            common_url='${commonUrl}',
+            common_title='${commonTitle}',
+            common_description='${commonDescription}',
+            common_image='${commonImage}',
+            common_image_alt='${commonImageAlt}',
+            twitter_url='${twitterUrl}',
+            twitter_title='${twitterTitle}',
+            twitter_description='${twitterDescription}',
+            twitter_image='${twitterImage}',
             twitter_hashtag='${twitterHashtag}'
         WHERE
             id=${opengraphId}
@@ -297,12 +297,13 @@ export const insertReview = async (psyId, review) => {
     const queryString = `
         INSERT INTO psy_review
         (
+            psy_id,
             review
         )
         VALUES
         (
             ${psyId},
-            ${review}
+            '${review}'
         )
         RETURNING id;
     `;
@@ -315,7 +316,7 @@ export const insertReview = async (psyId, review) => {
  */
 const insertOpengraph = async () => {
     const queryString = `
-        INSERT INTO admin.psy_result
+        INSERT INTO admin.opengraph
         (
             common_url,
             common_title,
@@ -339,11 +340,11 @@ const insertOpengraph = async () => {
             '',
             '',
             '',
-            '',
+            ''
         )
         RETURNING id;
     `;
-    return (await QUERY(queryString)[0]).id;
+    return (await QUERY(queryString))[0].id;
 };
 
 /**
@@ -351,36 +352,33 @@ const insertOpengraph = async () => {
  * @returns Number : id of inserted psy
  */
 export const insertPsy = async () => {
-    await transactionBegin();
     const ogId = await insertOpengraph();
     const viewId = await insertView();
-
     const queryString = `
         INSERT INTO admin.psy
         (
             title,
             description,
             thumbnail,
-            is_opend,
+            is_opened,
             questions,
             opengraph_id,
             psy_view_id
-        ) VALUES
+        )
+        VALUES
         (
             '',
             '',
             '',
             false,
-            [],
+            '[]',
             ${ogId},
             ${viewId}
         )
         RETURNING id;
     `;
 
-    const { id } = (await QUERY(queryString))[0];
-    await transactionCommit();
-    return id;
+    return (await QUERY(queryString))[0].id;
 };
 
 /**
@@ -389,7 +387,6 @@ export const insertPsy = async () => {
  * @returns Number : id of inserted psy_result
  */
 export const insertResult = async (psyId) => {
-    await transactionBegin();
     const ogId = await insertOpengraph();
     const viewId = await insertView();
 
@@ -414,9 +411,7 @@ export const insertResult = async (psyId) => {
         )
         RETURNING id;
     `;
-    const { id } = (await QUERY(queryString))[0];
-    await transactionCommit();
-    return id;
+    return (await QUERY(queryString))[0].id;
 };
 
 /*--------------------------------------------------------
@@ -431,32 +426,31 @@ DELETE
  * @returns
  */
 export const deletePsy = async (psyId) => {
-    await transactionBegin();
     const { opengraphId, psyViewId } = (await selectPsyById(psyId))[0];
+
+    // delete psy_review
+    await QUERY(`
+        DELETE FROM psy_review
+        WHERE psy_id=${psyId}
+    `);
 
     // delete psy
     await QUERY(`
         DELETE FROM admin.psy
         WHERE id=${psyId}
     `);
-    await transactionRollback();
-    await transactionSavepoint('psy');
 
     // delete opengraph
     await QUERY(`
         DELETE FROM admin.opengraph
         WHERE id=${opengraphId}
     `);
-    await transactionRollback('psy');
-    await transactionSavepoint('opengraph');
 
     // delete psy_view
     await QUERY(`
         DELETE FROM psy_view
         WHERE id=${psyViewId}
     `);
-    await transactionRollback('opengraph');
-    await transactionCommit();
 
     return true;
 };
@@ -467,7 +461,6 @@ export const deletePsy = async (psyId) => {
  * @returns
  */
 export const deleteResult = async (resultId) => {
-    await transactionBegin();
     const { opengraphId, psyViewId } = (await selectResultById(resultId))[0];
 
     // delete psy_result
@@ -475,24 +468,18 @@ export const deleteResult = async (resultId) => {
         DELETE FROM admin.psy_result
         WHERE id=${resultId}
     `);
-    await transactionRollback();
-    await transactionSavepoint('psy_result');
 
     // delete opengraph
     await QUERY(`
         DELETE FROM admin.opengraph
         WHERE id=${opengraphId}
     `);
-    await transactionRollback('psy');
-    await transactionSavepoint('opengraph');
 
     // delete psy_view
     await QUERY(`
         DELETE FROM psy_view
         WHERE id=${psyViewId}
     `);
-    await transactionRollback('opengraph');
-    await transactionCommit();
 
     return true;
 };

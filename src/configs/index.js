@@ -38,7 +38,7 @@ export const ENV = {
     databaseURL: cast(
         'DATABASE_URL',
         'string',
-        'postgresql://postgres:admin@localhost:5432/piwimi_local',
+        'postgresql://postgres:admin@localhost:5432/piwimiv2',
     ),
     gcsBucketName: cast('GCS_BUCKET_NAME', 'string', 'pwm-local'),
 };
