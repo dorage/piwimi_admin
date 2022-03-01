@@ -38,7 +38,7 @@ app.use(
 app.use(morgan('dev'));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(mainRouter);
-app.use('/psychotest', psychotestRouter);
+app.use('/psy', psychotestRouter);
 app.use('/review', reviewRouter);
 app.use('/api', apiRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));

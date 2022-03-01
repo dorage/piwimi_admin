@@ -10,27 +10,39 @@ block content-body
                 h4.card-title Create Psychotest
             .card-body
                 .basic-form
-                    form
+                    form(
+                        action='',
+                        method='post',
+                        enctype='multipart/form-data'
+                    )
                         .form-group.row
                             label.col-sm-2.col-form-label Title
                             .col-sm-10
                                 input.form-control(
                                     type='text',
-                                    placeholder='Title'
+                                    name='title',
+                                    placeholder='Title',
+                                    required
                                 )
                         .form-group.row
                             label.col-sm-2.col-form-label Description
                             .col-sm-10
                                 textarea#comment.form-control(
                                     rows='4',
-                                    placeholder='Description'
+                                    name='description',
+                                    placeholder='Description',
+                                    required
                                 )
                             fieldset.form-group
                         .input-group.mb-3
                             .input-group-prepend
                                 span.input-group-text Thumbnail
                             .custom-file
-                                input.custom-file-input(type='file')
+                                input.custom-file-input(
+                                    type='file',
+                                    name='thumbnail',
+                                    required
+                                )
                                 label.custom-file-label Choose file (800 * 500)
                         .form-group.row
                             .col-sm-10

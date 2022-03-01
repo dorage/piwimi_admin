@@ -5,21 +5,23 @@ block title
 
 mixin element(psy)
     tr
-        td !{ psy.psyId }
+        td !{ psy.id }
         td
             img(
-                src=`${psy.imgUrl?psy.imgUrl:'https://storage.googleapis.com/pwm-res/web/common/image-800_500.jpg'}`,
+                src=`${psy.thumbnail?psy.thumbnail:'https://storage.googleapis.com/pwm-res/web/common/image-800_500.jpg'}`,
                 alt='thumbnail',
                 style='height: 80px'
             )
         td 
-            a(href=`/psychotest/${psy.psyId}`) !{ psy.title || 'Untitled' }
+            a(href=`/psy/${psy.id}`) !{ psy.title || 'Untitled' }
         td
             if psy.status
                 span.badge.badge-info Opend
             else
                 span.badge.badge-warning Closed
         td !{ psy.description || 'Untitled' }
+        td
+            a.btn.btn-danger= "DELETE"
 
 block content-body
     .col-lg-12
@@ -27,7 +29,7 @@ block content-body
             .card-header.row
                 h4.card-title.col-lg-1 Basic
                 .col-lg-9
-                a.col-lg-1(href='/psychotest/create')
+                a.col-lg-1(href='/psy/create')
                     button.btn.btn-warning(type='button')= "CREATE"
                 .col-lg-1
             .card-body

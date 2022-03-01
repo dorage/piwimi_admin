@@ -7,12 +7,12 @@ import { updatePsyInfo, updatePsyOpengraph } from '../db/query';
 export const putPsyInfo = async (req, res) => {
     try {
         const { title, description } = req.body;
-        const { qId } = req.params;
+        const { psyId } = req.params;
         const imgUrl = req.file
-            ? await uploadPsyThumbnail(qId, req.file.path, req.file.filename)
+            ? await uploadPsyThumbnail(psyId, req.file)
             : req.body.thumbnail;
         console.log(imgUrl);
-        await updatePsyInfo(qId, { title, description, imgUrl });
+        await updatePsyInfo(psyId, { title, description, imgUrl });
         res.send('done!');
     } catch (err) {
         console.log(err);
@@ -30,7 +30,7 @@ export const putPsyOG = async (req, res) => {
             twtDescription,
             twtHashtags,
         } = req.body;
-        const { qId } = req.params;
+        const { psyId } = req.params;
         console.log(req.body);
 
         const opengraph = {
@@ -48,7 +48,7 @@ export const putPsyOG = async (req, res) => {
             },
         };
 
-        await updatePsyOpengraph(qId, opengraph);
+        await updatePsyOpengraph(psyId, opengraph);
         res.send('Done!');
     } catch (err) {
         console.log(err);

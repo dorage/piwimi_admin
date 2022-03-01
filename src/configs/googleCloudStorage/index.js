@@ -22,18 +22,21 @@ const getStorageURL = (destFileName) =>
 // TODO;
 // 2. if it is working, make another fns for thumb of answer, image for questions
 // 3. find image optimize app
-export const uploadPsyThumbnail = async function (qId, filePath, filename) {
-    const destFileName = `test/${qId}/psy/${filename}`;
-    await uploadFile(filePath, destFileName);
+export const uploadPsyThumbnail = async function (psyId, file) {
+    const { path } = file;
+    const destFileName = `test/${psyId}/psy/`;
+
+    await uploadFile(path, destFileName);
     // delete local file
-    fs.unlinkSync(filePath);
+    fs.unlinkSync(path);
     return getStorageURL(destFileName);
 };
 
-export const uploadOGThumbnail = async function (qId, filePath, filename) {
-    const destFileName = `test/${qId}/og/${filename}`;
-    await uploadFile(filePath, destFileName);
+export const uploadOGThumbnail = async function (psyId, file) {
+    const { path } = file;
+    const destFileName = `test/${psyId}/og/`;
+    await uploadFile(path, destFileName);
     // delete local file
-    fs.unlinkSync(filePath);
+    fs.unlinkSync(path);
     return getStorageURL(destFileName);
 };

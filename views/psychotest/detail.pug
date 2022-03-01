@@ -6,12 +6,12 @@ mixin input(id, value)
         .col-sm-10
             input.form-control(value=`${value}`, data-key=`${id}`)
 
-mixin textarea(id ,value)
+mixin textarea(id ,value, rows=30)
     .row.form-group
         .col-sm-2.col-form-label !{ id }
         .col-sm-10
-            textarea.form-control(rows='4', data-key=`${id}`)
-                | !{ value.split('\n').join('&#10;') }
+            textarea.form-control(rows=rows, data-key=`${id}`)
+                | !{ value ? value.split('\n').join('&#10;') : '' }
 
 mixin file(id, value)
     .row.form-group
@@ -39,14 +39,14 @@ mixin status(id, value)
             else
                 span.badge.badge-warning Closed
 
-mixin answerCard(qid, aId, answer)
+mixin answerCard(psyId, aId, answer)
     .card.col-sm-2.text-center.border.shadow-sm.mr-2
         .card-header
             h4.card-title ■ !{ answer.type }
         .card-body
             p answer ID : !{ aId }
         .card-footer
-            a.btn.btn-dark.btn-card(href=`./detail/${qId}/answer/${aId}`) Edit
+            a.btn.btn-dark.btn-card(href=`./detail/${psyId}/answer/${aId}`) Edit
 
 mixin questionCard
     .border question
@@ -55,27 +55,27 @@ block title
     title Psychotest | PIWIMI
 
 block content-body
+    - var psy = content.psy;
     .row.page-titles.mx-0
         .col-sm-6
             .welcome-text
                 h4 Psychotest Detail
-                span.ml-1 psy ID : !{ content.psy.psyId }
+                span.ml-1 psy ID : !{ psy.id }
     .row 
         .col-12
             .row
                 // Default Information
                 .col-lg-6.col-sm-6
-                    form#formInfo(enctype='multipart/form-data')
+                    form#formInfo
                         .card
                             .card-header
                                 h4.card-title.col-lg-12 Information
                             .card-body
-                                - var psy = content.psy;
                                 +input('title', psy.title)
                                 +textarea('description', psy.description)
-                                +image('thumbnail', psy.imgUrl)
-                                +file('thumbnail', psy.imgUrl)
-                                +status('status', psy.status)
+                                +image('thumbnail', psy.thumbnail)
+                                +file('thumbnail', psy.thumbnail)
+                                +status('isOpend', psy.isOpend)
                             .card-footer.d-flex
                                 button.btn.btn-dark(type='submit')= "save"
                                 .subtitled.ml-2= ""
@@ -87,20 +87,18 @@ block content-body
                                 h4.card-title.col-lg-12 OpenGraph
                             .card-body
                                 h6 Normal
-                                - var og = content.psy.opengraph.og;
-                                +input('ogTitle', og.title)
-                                +textarea('ogDescription', og.description)
-                                +image('ogThumbnail', og.image)
-                                +file('ogThumbnail', og.image)
-                                +input('ogImageAlt', og.imageAlt)
+                                +input('commonTitle', psy.commonTitle)
+                                +textarea('commonDescription', psy.commonDescription, 4)
+                                +image('commonImage', psy.commonImage)
+                                +file('commonImage', psy.commonImage)
+                                +input('commonImageAlt', psy.commonImageAlt)
                                 hr
                                 h6 Twitter
-                                - var twt = content.psy.opengraph.twitter;
-                                +input('twtTitle', twt.title)
-                                +textarea('twtDescription', twt.description)
-                                +image('twtThumbnail', twt.image)
-                                +file('twtThumbnail', twt.image)
-                                +input('twtHashtags', twt.hashtag)
+                                +input('twitterTitle', psy.twitterTitle)
+                                +textarea('twitterDescription', psy.twitterDescription, 4)
+                                +image('twitterImage', psy.twitterImage)
+                            +file('twitterImage', psy.twitterImage)
+                                +input('twitterHashtag', psy.twitterHashtag)
                             .card-footer.d-flex
                                 button.btn.btn-dark(type='submit')= "save"
                                 .subtitled.ml-2= ""
@@ -112,12 +110,10 @@ block content-body
                             h4.card-title.col-lg-12 Answers
                         .card-body
                             .row.container-fluid
-                                - var qId = content.psy.psyId;
-                                - var answers = content.answer.answers;
                                 - var aId = 0;
                                 if answers
                                     each answer in answers
-                                        +answerCard(qId, aId, answer)
+                                        +answerCard(psyId, aId, answer)
                                         - aId += 1;
                                     .card.bg-light.col-sm-2.text-center.border.border-dark.mr-1
                                         .card-header
@@ -133,18 +129,19 @@ block content-body
                         .card-body
                             ul
                                 - var index = 1;
-                                each question in content.psy.questions
-                                    li.card.border.rounded.mb-2.shadow-sm
-                                        .card-header
-                                            h4.card-title Q!{ index < 10 ? `0${index}` : index }
-                                        .card-body
-                                            p !{ question.query }
-                                            p type: !{ question.answers ? 'Multiple Choice' : 'Yes Or No' }
-                                        - index += 1;
+                                if psy.questions
+                                    each question in psy.questions
+                                        li.card.border.rounded.mb-2.shadow-sm
+                                            .card-header
+                                                h4.card-title Q!{ index < 10 ? `0${index}` : index }
+                                            .card-body
+                                                p !{ question.query }
+                                                p type: !{ question.answers ? 'Multiple Choice' : 'Yes Or No' }
+                                            - index += 1;
     .row
         .row
             .col-lg-5
                 button.btn.btn-success(type='submit') Save
             .col-lg-5
-                a.btn.btn-light(href='/psychotest') Cancel
+                a.btn.btn-light(href='/psy') Cancel
     script(src='/public/custom/js/psy/detail/index.js')

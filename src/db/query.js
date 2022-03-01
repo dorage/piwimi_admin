@@ -1,5 +1,5 @@
 import pool from '.';
-import { snakeToCamel } from './utils';
+import { camelToSnake, snakeToCamel, updateSetQuery } from './utils';
 
 const QUERY = async (query) => {
     const { rows } = await pool.query(query);
@@ -125,7 +125,7 @@ export const selectPsyWithView = async (limit = 10, offset = 0) => {
 
 /**
  * id로 심리테스트를 가져옵니다.
- * @param {*} qId
+ * @param {*} psyId
  * @returns
  */
 export const selectPsyById = async (psyId) => {
@@ -133,6 +133,60 @@ export const selectPsyById = async (psyId) => {
         SELECT *
         FROM admin.psy
         WHERE id=${psyId}
+    `;
+    return QUERY(queryString);
+};
+/**
+ * id로 심리테스트를 오픈그래프 정보와 함게 가져옵니다.
+ * @param {*} psyId
+ * @returns
+ */
+export const selectPsyByIdWithOpengraph = async (psyId) => {
+    const queryString = `
+        SELECT *
+        FROM
+            admin.psy
+        JOIN (
+            SELECT *
+            FROM admin.opengraph
+            WHERE id = (
+                SELECT opengraph_id
+                FROM admin.psy
+                WHERE id=${psyId}
+            )
+        ) as opengraph
+        ON admin.psy.opengraph_id = opengraph.id
+    `;
+    return QUERY(queryString);
+};
+/**
+ * id로 심리테스트를 오픈그래프, 뷰 등 모든 정보와 함게 가져옵니다.
+ * @param {*} psyId
+ * @returns
+ */
+export const selectPsyByIdDetail = async (psyId) => {
+    const queryString = `
+        SELECT *
+        FROM (
+            SELECT *
+            FROM
+                admin.psy
+            JOIN (
+                SELECT *
+                FROM admin.opengraph
+                WHERE id = (
+                    SELECT opengraph_id
+                    FROM admin.psy
+                    WHERE id=${psyId}
+                )
+            ) as opengraph
+            ON admin.psy.opengraph_id = opengraph.id
+        ) as psy
+        JOIN (
+            SELECT *
+            FROM psy_view
+        ) as psy_view
+        ON psy.psy_view_id = psy_view.id
     `;
     return QUERY(queryString);
 };
@@ -200,11 +254,13 @@ export const updatePsy = async (
     const queryString = `
         UPDATE admin.psy
         SET
-            title='${title}',
-            description='${description}',
-            thumbnail='${thumbnail}',
-            is_opened='${isOpened}',
-            questions='${JSON.stringify(questions)}'
+            ${updateSetQuery({
+                title,
+                description,
+                thumbnail,
+                isOpened,
+                questions: JSON.stringify(questions),
+            })}
         WHERE
             id=${psyId}
         RETURNING *
@@ -225,9 +281,7 @@ export const updateResult = async (
     const queryString = `
     UPDATE admin.psy_result
     SET
-        thumbnail='${thumbnail}',
-        result='${result}',
-        description='${description}'
+        ${updateSetQuery({ thumbnail, result, description })}
     WHERE
         id=${resultId}
     RETURNING *
@@ -241,20 +295,36 @@ export const updateResult = async (
  * @param {*} opengraphId
  * @returns
  */
-export const updateOpengraph = async (opengraphId) => {
+export const updateOpengraph = async (
+    opengraphId,
+    {
+        commonUrl,
+        commonTitle,
+        commonDescription,
+        commonImage,
+        commonImageAlt,
+        twitterUrl,
+        twitterTitle,
+        twitterDescription,
+        twitterImage,
+        twitterHashtag,
+    },
+) => {
     const queryString = `
         UPDATE admin.opengraph
         SET
-            common_url='${commonUrl}',
-            common_title='${commonTitle}',
-            common_description='${commonDescription}',
-            common_image='${commonImage}',
-            common_image_alt='${commonImageAlt}',
-            twitter_url='${twitterUrl}',
-            twitter_title='${twitterTitle}',
-            twitter_description='${twitterDescription}',
-            twitter_image='${twitterImage}',
-            twitter_hashtag='${twitterHashtag}'
+            ${updateSetQuery({
+                commonUrl,
+                commonTitle,
+                commonDescription,
+                commonImage,
+                commonImageAlt,
+                twitterUrl,
+                twitterTitle,
+                twitterDescription,
+                twitterImage,
+                twitterHashtag,
+            })}
         WHERE
             id=${opengraphId}
         RETURNING *
@@ -289,7 +359,7 @@ const insertView = async () => {
 
 /**
  * 새로운 psy_review를 생성하고 id를 반환합니다.
- * @param {*} qId
+ * @param {*} psyId
  * @param {*} review
  * @returns Number : id of inserted psy_reivew
  */
@@ -314,7 +384,11 @@ export const insertReview = async (psyId, review) => {
  * 새로운 opengraph를 생성하고 id를 반환합니다.
  * @returns Number : id of inserted psy_reivew
  */
-const insertOpengraph = async () => {
+const insertOpengraph = async (
+    title = '',
+    description = '',
+    thumbnail = '',
+) => {
     const queryString = `
         INSERT INTO admin.opengraph
         (
@@ -332,14 +406,14 @@ const insertOpengraph = async () => {
         VALUES
         (
             '',
+            '${title}',
+            '${description}',
+            '${thumbnail}',
             '',
             '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
+            '${title}',
+            '${description}',
+            '${thumbnail}',
             ''
         )
         RETURNING id;
